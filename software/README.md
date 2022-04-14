@@ -28,12 +28,13 @@ This project relies on several additional libraries that need to be installed in
 - [RTClib](https://github.com/adafruit/RTClib) by Adafruit
 - [IotWebConf](https://github.com/prampec/IotWebConf) by Balazs Kelemen **version 2.3.x** (not compatible with version 3 yet)
 - [NeoPixelBus](https://github.com/Makuna/NeoPixelBus) by Michael C. Mille
+- [Adafruit BusIO](https://github.com/adafruit/Adafruit_BusIO) by Adafruit
 
 You are now ready to compile and flash the [`wordclock.ino` sketch](wordclock/wordclock.ino).
 
 ## OTA update
 
-After the firwmare has been flashed over USB once, you can use the OTA feature to flash further updates: build the new binary file from the Arduino IDE (`Sketch > Export compiled Binary`), then open the web portal of your clock, click the `Firmware update` link at the bottom and upload the new `.bin` file.
+After the firmware has been flashed over USB once, you can use the OTA feature to flash further updates: build the new binary file from the Arduino IDE (`Sketch > Export compiled Binary`), then open the web portal of your clock, click the `Firmware update` link at the bottom and upload the new `.bin` file.
 
 ## Credits
 
