@@ -5,6 +5,8 @@
 #include <NeoPixelBus.h>
 #include <WiFi.h>
 
+#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
+
 // Name of this IoT object.
 #define THING_NAME "WordClock"
 // Initial WiFi access point password.
@@ -132,12 +134,12 @@ body > div > div:last-child {\
   const char CUSTOMHTML_BODY_INNER_START[] PROGMEM = "<header><div class=\"logoContainer\"><img class=\"logo\" src=\"";
   const char CUSTOMHTML_BODY_INNER_END[] PROGMEM = "\"/></div></header>\n";
 
-  class CustomHtmlFormatProvider : public IotWebConfHtmlFormatProvider
+  class CustomHtmlFormatProvider : public iotwebconf::HtmlFormatProvider
   {
   protected:
     String getHead() override
     {
-      String head = IotWebConfHtmlFormatProvider::getHead();
+      String head = iotwebconf::HtmlFormatProvider::getHead();
       head.replace("{v}", THING_NAME);
       return head + String(FPSTR(CUSTOM_HTML_META_START)) +
              String(FPSTR(LOGO_DATA_URI)) +
@@ -145,12 +147,12 @@ body > div > div:last-child {\
     }
     String getScriptInner() override
     {
-      return IotWebConfHtmlFormatProvider::getScriptInner() +
+      return iotwebconf::HtmlFormatProvider::getScriptInner() +
              String(FPSTR(CUSTOMHTML_SCRIPT_INNER));
     }
     String getStyleInner() override
     {
-      return IotWebConfHtmlFormatProvider::getStyleInner() +
+      return iotwebconf::HtmlFormatProvider::getStyleInner() +
              String(FPSTR(CUSTOMHTML_STYLE_INNER));
     }
     String getBodyInner() override
@@ -158,7 +160,7 @@ body > div > div:last-child {\
       return String(FPSTR(CUSTOMHTML_BODY_INNER_START)) +
              String(FPSTR(LOGO_DATA_URI)) +
              String(FPSTR(CUSTOMHTML_BODY_INNER_END)) +
-             IotWebConfHtmlFormatProvider::getBodyInner();
+             iotwebconf::HtmlFormatProvider::getBodyInner();
     }
   };
   // An instance must be created from the class defined above.
@@ -271,31 +273,30 @@ body > div > div:last-child {\
 } // namespace
 
 Iot::Iot(Display *display, RTC_DS3231 *rtc)
-    : web_server_(WEB_SERVER_PORT), display_(display), rtc_(rtc),
-      display_separator_("Display"),
+    : web_server_(WEB_SERVER_PORT), display_(display), rtc_(rtc), 
+      display_group_("display_group", "Display"),
       color_param_("Color", "color", color_value_,
-                   IOT_CONFIG_VALUE_LENGTH, "color", "#RRGGBB", "#FFFFFF",
-                   "pattern='#[0-9a-fA-F]{6}' "
-                   "style='border-width: 1px; padding: 1px;'"),
+                   IOT_CONFIG_VALUE_LENGTH, "#RRGGBB", "#FFFFFF",
+                   "pattern='#[0-9a-fA-F]{6}' style='border-width: 1px; padding: 1px;'"),
       show_ampm_param_(
           "AM/PM indicator", "show_ampm", show_ampm_value_,
-          IOT_CONFIG_VALUE_LENGTH, "range", "0", "0",
+          IOT_CONFIG_VALUE_LENGTH, "0", "0",
           "style='width: 40px;' data-labels='Off|On' min='0' max='1' step='1'"),
       ldr_sensitivity_param_(
           "Light sensor sensitivity", "ldr_sensitivity", ldr_sensitivity_value_,
-          IOT_CONFIG_VALUE_LENGTH, "range", "5", "5",
+          IOT_CONFIG_VALUE_LENGTH, "5", "0..10",
           "min='0' max='10' step='1' data-labels='Off'"),
-      time_separator_("Time"),
+      time_group_("time_group", "Time"),
       ntp_enabled_param_(
           "Use network time (requires WiFi)", "ntp_enabled", ntp_enabled_value_,
-          IOT_CONFIG_VALUE_LENGTH, "range", "0", "0",
+          IOT_CONFIG_VALUE_LENGTH, "0", "0",
           "style='width: 40px;' data-labels='Off|On' min='0' max='1' step='1'"),
       timezone_param_(
           "Time zone", "timezone", timezone_value_, IOT_CONFIG_VALUE_LENGTH,
-          "number", DEFAULT_TIMEZONE, DEFAULT_TIMEZONE, locationOptions),
+          DEFAULT_TIMEZONE, DEFAULT_TIMEZONE, locationOptions),
       //manual_date_param_("Date", "date", manual_date_value_, IOT_CONFIG_VALUE_LENGTH, "date",
       //            "yyyy-mm-dd", nullptr, "pattern='\\d{4}-\\d{1,2}-\\d{1,2}'"),
-      manual_time_param_("Time", "time", manual_time_value_, IOT_CONFIG_VALUE_LENGTH, "time",
+      manual_time_param_("Time", "time", manual_time_value_, IOT_CONFIG_VALUE_LENGTH,
                          "hh:mm:ss", nullptr,
                          "pattern='\\d{1,2}:\\d{1,2}:\\d{1,2}' step='1'"),
       iot_web_conf_(THING_NAME, &dns_server_, &web_server_,
@@ -324,7 +325,7 @@ void Iot::updateClockFromParams_()
   display_->setColor(
       parseColorValue(color_value_, RgbColor(255, 255, 255)));
   display_->setShowAmPm(parseBooleanValue(show_ampm_value_));
-  display_->setSensorSentivity(parseNumberValue(ldr_sensitivity_value_, 0, 10, 5));
+  display_->setSensorSensitivity(parseNumberValue(ldr_sensitivity_value_, 0, 10, 5));
 
   if (parseBooleanValue(ntp_enabled_value_))
   {
@@ -357,16 +358,23 @@ void Iot::setup()
   this->ntp_enabled_value_[0] = '\0';
   this->timezone_value_[0] = '\0';
 
-  iot_web_conf_.setupUpdateServer(&http_updater_);
-  iot_web_conf_.addParameter(&display_separator_);
-  iot_web_conf_.addParameter(&show_ampm_param_);
-  iot_web_conf_.addParameter(&ldr_sensitivity_param_);
-  iot_web_conf_.addParameter(&color_param_);
-  iot_web_conf_.addParameter(&time_separator_);
-  iot_web_conf_.addParameter(&ntp_enabled_param_);
-  iot_web_conf_.addParameter(&timezone_param_);
-  //iot_web_conf_.addParameter(&manual_date_param_);
-  iot_web_conf_.addParameter(&manual_time_param_);
+  // TODO: fix update server
+  //iot_web_conf_.setupUpdateServer(&http_updater_);
+
+  // Group: Display
+  display_group_.addItem(&show_ampm_param_);
+  display_group_.addItem(&ldr_sensitivity_param_);
+  display_group_.addItem(&color_param_);
+
+  // Group: Time
+  time_group_.addItem(&ntp_enabled_param_);
+  time_group_.addItem(&timezone_param_);
+  //time_group_.addItem(&manual_date_param_);
+  time_group_.addItem(&manual_time_param_);
+
+  // add groups
+  iot_web_conf_.addParameterGroup(&display_group_);
+  iot_web_conf_.addParameterGroup(&time_group_);
 
   iot_web_conf_.setConfigSavedCallback([this]() { handleConfigSaved_(); });
 
