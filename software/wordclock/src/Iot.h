@@ -5,7 +5,19 @@
 #include "Timer.h"
 
 #include <IotWebConf.h>
-#include <HTTPUpdateServer.h>
+
+/*
+#if defined(ARDUINO_ARCH_ESP8266)
+  // needed for vscode to detect the libs correctly
+  #include <ESP8266HTTPUpdateServer-impl.h>
+  #include <ESP8266HTTPUpdateServer.h>
+
+  // alias
+  using HTTPUpdateServer = ESP8266HTTPUpdateServer;
+#elif defined(ESP32)
+  #include <HTTPUpdateServer.h>
+#endif
+*/
 
 #include <RTClib.h>
 
@@ -52,7 +64,7 @@ private:
   // Configuration portal's web server.
   WebServer web_server_;
   // Server for OTA firmware update.
-  HTTPUpdateServer http_updater_;
+  //HTTPUpdateServer http_updater_;
 
   // Word clock display.
   Display *display_ = nullptr;

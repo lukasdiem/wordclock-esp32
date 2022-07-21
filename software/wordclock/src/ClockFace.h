@@ -5,7 +5,7 @@
 class ClockFace
 {
 public:
-  static int pixelCount();
+  virtual int pixelCount();
 
   // The orientation of the clock is infered from where the light sensor is.
   enum class LightSensorPosition
@@ -33,7 +33,7 @@ protected:
   void updateSegment(int x, int y, int length);
 
   // Returns the index of the LED in the strip given a position on the grid.
-  uint16_t map(int16_t x, int16_t y);
+  virtual uint16_t map(int16_t x, int16_t y);
 
   // The first four LED are the corner ones, counting minutes. They are assumed
   // to be wired in clockwise order, starting from the light sensor position.
@@ -46,7 +46,7 @@ protected:
     BottomRight,
     TopRight
   };
-  uint16_t mapMinute(Corners corner);
+  virtual uint16_t mapMinute(Corners corner);
 
   // To avoid refreshing to often, this stores the time of the previous UI
   // update. If nothing changed, there will be no interuption of animations.

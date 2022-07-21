@@ -7,7 +7,8 @@
 #include "ClockFace.h"
 
 // The pin to control the matrix
-#define NEOPIXEL_PIN 32
+//#define NEOPIXEL_PIN 32
+#define NEOPIXEL_PIN 14
 
 //
 #define TIME_CHANGE_ANIMATION_SPEED 400
@@ -47,6 +48,7 @@ private:
 
   // Addressable bus to control the LEDs.
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> _pixels;
+  //NeoPixelBus<NeoGrbFeature, NeoEsp32BitBangWs2812xMethod> _pixels;
 
   // Reacts to change in ambient light to adapt the power of the LEDs
   BrightnessController _brightnessController;
@@ -57,4 +59,6 @@ private:
   // second to a little bit more than 10 minutes.
   //
   NeoPixelAnimator _animations;
+
+  int _debugIndex = 0;
 };
