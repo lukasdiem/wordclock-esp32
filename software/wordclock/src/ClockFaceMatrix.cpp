@@ -156,10 +156,12 @@ bool GermanClockFaceMatrix::stateForTime(int hour, int minute, int second, bool 
     break;
   case 1:
   case 13:
+    DLOG("EINS");
     updateSegment(DE_H_ONE);
     break;
   case 2:
   case 14:
+    DLOG("ZWEI");
     updateSegment(DE_H_TWO);
     break;
   case 3:
@@ -263,13 +265,13 @@ bool GermanClockFaceMatrix::stateForTime(int hour, int minute, int second, bool 
   switch (leftover)
   {
   case 4:
-    _state[mapMinute(TopLeft)] = true;
+    updateSegment(DE_M_4);
   case 3: // fall through
-    _state[mapMinute(BottomLeft)] = true;
+    updateSegment(DE_M_3);
   case 2: // fall through
-    _state[mapMinute(BottomRight)] = true;
+    updateSegment(DE_M_2);
   case 1: // fall through
-    _state[mapMinute(TopRight)] = true;
+    updateSegment(DE_M_1);
   case 0: // fall through
     break;
   }

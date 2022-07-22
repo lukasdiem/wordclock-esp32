@@ -1,3 +1,4 @@
+/*
 #include "logging.h"
 #include "Iot.h"
 #include "Timezones.h"
@@ -480,3 +481,4 @@ void Iot::handleWifiConnection_()
   DLOGLN("Wifi connected.");
   maybeSetRTCfromNTP_();
 }
+*/

@@ -8,10 +8,13 @@
 
 // The pin to control the matrix
 //#define NEOPIXEL_PIN 32
-#define NEOPIXEL_PIN 14
 
-//
-#define TIME_CHANGE_ANIMATION_SPEED 400
+// Ignored on the ESP8266 platform
+// => Uses GPIO3 by default!
+#define NEOPIXEL_PIN -1
+
+// DEFAULT = 400
+#define TIME_CHANGE_ANIMATION_SPEED 10
 
 class Display
 {
@@ -20,6 +23,7 @@ public:
 
   void setup();
   void loop();
+  void loopTest(int delayMs);
   void setColor(const RgbColor &color);
 
   // Sets the sensor sensitivity of the brightness controller.
@@ -60,5 +64,5 @@ private:
   //
   NeoPixelAnimator _animations;
 
-  int _debugIndex = 0;
+  int _testIndex = 0;
 };

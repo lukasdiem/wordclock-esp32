@@ -7,9 +7,13 @@
 // The number of LEDs connected before the start of the matrix.
 #define NEOPIXEL_SIGNALS 4
 
+
+// FIXME: Move these vars into the class => redefine needed in my case :/
 // Matrix dimensions.
-#define NEOPIXEL_ROWS 11
-#define NEOPIXEL_COLUMNS 10
+//#define NEOPIXEL_ROWS 11
+//#define NEOPIXEL_COLUMNS 10
+#define NEOPIXEL_ROWS 16
+#define NEOPIXEL_COLUMNS 16
 
 // Number of LEDs on the whole strip.
 #define NEOPIXEL_COUNT (NEOPIXEL_ROWS * NEOPIXEL_COLUMNS + NEOPIXEL_SIGNALS)

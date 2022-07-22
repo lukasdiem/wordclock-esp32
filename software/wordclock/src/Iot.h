@@ -1,3 +1,4 @@
+/*
 #ifndef _IOT_H_
 #define _IOT_H_
 
@@ -6,7 +7,7 @@
 
 #include <IotWebConf.h>
 
-/*
+
 #if defined(ARDUINO_ARCH_ESP8266)
   // needed for vscode to detect the libs correctly
   #include <ESP8266HTTPUpdateServer-impl.h>
@@ -17,7 +18,7 @@
 #elif defined(ESP32)
   #include <HTTPUpdateServer.h>
 #endif
-*/
+
 
 #include <RTClib.h>
 
@@ -119,3 +120,4 @@ private:
 };
 
 #endif // _IOT_H_
+*/

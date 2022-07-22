@@ -18,5 +18,7 @@ public:
 private:
   std::function<void()> callback_ = NULL;
   uint32_t delay_seconds_ = 1;
-  hw_timer_t *timer_ = NULL;
+  //hw_timer_t *timer_ = NULL;
+
+  bool getMutex(int retries);
 };
